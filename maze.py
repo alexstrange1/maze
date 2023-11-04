@@ -57,8 +57,7 @@ class Player(GameSprite):
 class Enemy(GameSprite):
     direction = "left"
     def update(self):
-        if self.rect.x < WIDTH/2:
-            self.direction = "right"
+        if self.rect.x < WIDTH/2:    self.direction = "right"
         elif self.rect.x > WIDTH - 65:
             self.direction = "left"
         
@@ -75,10 +74,9 @@ class Wall(pygame.sprite.Sprite):
     def draw_wall(self):
         pygame.draw.rect(window, self.color, self.rect)
 
-
 player = Player("hero.png", 50, HEIGHT-50, 5)
 
-gold = GameSprite("treasure.png", 150, HEIGHT-50, 0)
+gold = GameSprite("treasure.png", WIDTH-250, HEIGHT-450, 0)
 
 enemy = Enemy("cyborg.png", WIDTH/2-100, HEIGHT/3, 3)
 
@@ -86,7 +84,11 @@ walls = [
     Wall((10,10), (WIDTH-20, 10), (255,0,0)),
     Wall((WIDTH-10,10), (200, HEIGHT), (255,0,0)),
     Wall((10,10), (10, HEIGHT-20), (0,0,255)),
-    Wall((10,HEIGHT-10), (WIDTH-20, 10), (255,0,0))
+    Wall((10,HEIGHT-10), (WIDTH-20, 10), (255,0,0)),
+    Wall((WIDTH/4, HEIGHT-10), (WIDTH/2, 10), (0,255,0)),
+    Wall((WIDTH/2-100, HEIGHT/2), (10, HEIGHT/2), (0,255,0)),
+    Wall((WIDTH/4, 10), (WIDTH/2, 10), (0,255,0)),
+    Wall((WIDTH/2+100, 10), (10, HEIGHT/2), (0,255,0)),
 ]
 
 game_over = False
@@ -103,8 +105,10 @@ while not game_over:
     player.update()
     for w in walls:
         w.draw_wall()
+    
+    wall_collision =  any([pygame.sprite.collide_rect(player, w) for w in walls])
 
-    if pygame.sprite.collide_rect(player, enemy):
+    if pygame.sprite.collide_rect(player, enemy) or wall_collision:
         sfx = pygame.mixer.Sound("kick.ogg")
         sfx.play()
         font = pygame.font.Font(None, 40)
